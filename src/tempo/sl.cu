@@ -1,6 +1,6 @@
 #include "../../include/internal/sdatal.h"
 #include "../solvers/lattice/llocals.cu"
-#include "../solvers/lattice/iter.cu"
+#include "../solvers/lattice/liter.cu"
 
 const int3 lattice = int3(128,128,128);
 
