@@ -11,7 +11,7 @@ int gridSize = (tcells + blocksize - 1) / blocksize;
 void klbm() {
 
     sdatal data; data.init(lattice);
-    lstates<<<gridSize, blocksize>>>(data.distF, data.leq, data.ldensity, data.lvelocity, tcells);
+    lstates<<<gridSize, blocksize>>>(data.distF, data.leq, data.ldensity, data.lvelocity, tcells, true);
     normalize<<<gridSize, blocksize>>>(data.leq, data.distF, tcells);
     data.destroy();
 }

@@ -5,19 +5,27 @@ __device__ void leqstates(float* __restrict__ feq, float* __restrict__ ldensity,
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx >= tcells) return;
 
+    #pragma unroll
     for (int i = 0; i < latSize; i++) {
         int fi =  i * tcells + idx;
 
-        float eiudot = lutDirections[i].x * lvelocity[idx].x + lutDirections[i].y * lvelocity[idx].y + lutDirections[i].z * lvelocity[idx].z;
-        float udot = lvelocity[idx].x * lvelocity[idx].x + lvelocity[idx].y * lvelocity[idx].y + lvelocity[idx].z * lvelocity[idx].z;
-        feq[fi] = lutWeights[i] * ldensity[idx] * (1 + 3 * eiudot + (9.0f / 2.0f) * (eiudot * eiudot) - (3.0f / 2.0f) * udot); //s is 0.3... in D3Q19
+        float eiudot = fmaf(lutDirections[i].x, lvelocity[idx].x, 0.0);
+        eiudot = fmaf(lutDirections[i].y, lvelocity[idx].y, eiudot);
+        eiudot = fmaf(lutDirections[i].z, lvelocity[idx].z, eiudot);
+
+        float udot = fmaf(lvelocity[idx].x, lvelocity[idx].x, 0.0);
+        udot = fmaf(lvelocity[idx].y, lvelocity[idx].y, udot);
+        udot = fmaf(lvelocity[idx].z, lvelocity[idx].z, udot);
+
+        feq[fi] = lutWeights[i] * ldensity[idx] * (1 + 3 * eiudot + (9.0f / 2.0f) * (eiudot * eiudot) - (3.0f / 2.0f) * udot); //c^2 is 0.3... in D3Q19
     }
 }
 
-__global__ void lstates(float* __restrict__ distF, float* __restrict__ feq, float* __restrict__ ldensity, float3* __restrict__ lvelocity, int tcells) {
+__global__ void lstates(float* __restrict__ distF, float* __restrict__ feq, float* __restrict__ ldensity, float3* __restrict__ lvelocity, int tcells, bool init) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx >= tcells) return;
 
+    #pragma unroll
     for (int i = 0; i < latSize; i++) {
         ldensity[idx] += distF[i * tcells + idx];
 
@@ -32,5 +40,5 @@ __global__ void lstates(float* __restrict__ distF, float* __restrict__ feq, floa
     lvelocity[idx].y *= invdensity;
     lvelocity[idx].z *= invdensity;
 
-    leqstates(feq, ldensity, lvelocity, tcells);
+    if (init) { leqstates(feq, ldensity, lvelocity, tcells); } //init does not cause warp divergence; it is a switch for leqstates (same value for all threads)
 }
