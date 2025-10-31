@@ -14,7 +14,6 @@ if(WIN32)
     target_include_directories(fls PRIVATE ${OPENGL_INCLUDE_DIR})
     target_link_libraries(fls PRIVATE ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY})
 else()
-    # Linux/macOS can use the modern approach
     find_package(OpenGL REQUIRED)
     add_executable(fls src/tempo/loop.cu)
     target_link_libraries(fls PRIVATE OpenGL::OpenGL)
