@@ -1,5 +1,5 @@
 #include <cuda_runtime.h>
-#include "../lattice/llutcs.h"
+#include "../../../include/internal/llutcs.h"
 
 __device__ void leqstates(float* __restrict__ feq, float* __restrict__ ldensity, float3* __restrict__ lvelocity, int tcells) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;

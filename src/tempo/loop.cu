@@ -31,7 +31,7 @@ void klbm(bool init) {
 
 int main() {
 
-    klbm(true);
+    klbm(false);
     return 0;
 }
 

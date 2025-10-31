@@ -1,5 +1,5 @@
 #include <cuda_runtime.h>
-#include "llutcs.h"
+#include "../../../include/internal/llutcs.h"
 
 __global__ void collide(float* __restrict__ leq, float* __restrict__ distF, int tcells) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
