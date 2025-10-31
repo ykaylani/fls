@@ -3,7 +3,9 @@
 
 class sdatal {
     public:
-        float* distF = nullptr;
+        float* distf = nullptr; // turns into temp on streaming step
+        float* fdist = nullptr; // is used for the final write when streaming
+
         float* ldensity = nullptr;
         float3* lvelocity = nullptr;
         float* leq = nullptr;
@@ -14,7 +16,8 @@ class sdatal {
 
 inline void sdatal::init(int3 latticeSize)
 {
-    cudaMalloc(&distF, latticeSize.x * latticeSize.y * latticeSize.z * 19 * sizeof(float));
+    cudaMalloc(&distf, latticeSize.x * latticeSize.y * latticeSize.z * 19 * sizeof(float));
+    cudaMalloc(&fdist, latticeSize.x * latticeSize.y * latticeSize.z * 19 * sizeof(float));
     cudaMalloc(&leq, latticeSize.x * latticeSize.y * latticeSize.z * 19 * sizeof(float));
 
     cudaMalloc(&ldensity, latticeSize.x * latticeSize.y * latticeSize.z * sizeof(float));
@@ -23,11 +26,13 @@ inline void sdatal::init(int3 latticeSize)
 
 inline void sdatal::destroy()
 {
-    cudaFree(distF);
+    cudaFree(distf);
+    cudaFree(fdist);
     cudaFree(ldensity);
     cudaFree(lvelocity);
     cudaFree(leq);
-    distF = nullptr;
+    distf = nullptr;
+    fdist = nullptr;
     ldensity = nullptr;
     lvelocity = nullptr;
     leq = nullptr;

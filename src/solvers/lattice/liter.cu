@@ -1,6 +1,7 @@
 #include <cuda_runtime.h>
+#include "llutcs.h"
 
-__global__ void normalize(float* __restrict__ leq, float* __restrict__ distF, int tcells) {
+__global__ void collide(float* __restrict__ leq, float* __restrict__ distF, int tcells) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx >= tcells) return;
 
@@ -11,9 +12,12 @@ __global__ void normalize(float* __restrict__ leq, float* __restrict__ distF, in
     }
 }
 
-__global__ void stream(float* distF, int tcells) {
+__global__ void stream(float* distF, int tcells, float* out) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx >= tcells) return;
 
-
+    #pragma unroll
+    for (int i = 0; i < latSize; i++) {
+        out[i * tcells + idx] = distF[i * tcells + (idx + lutOffsets[i])];
+    }
 }

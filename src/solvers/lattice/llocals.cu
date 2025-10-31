@@ -29,7 +29,7 @@ __global__ void lstates(float* __restrict__ distF, float* __restrict__ feq, floa
     for (int i = 0; i < latSize; i++) {
         ldensity[idx] += distF[i * tcells + idx];
 
-        float3 r = float3(lutDirections[i].x * distF[i * tcells + idx], lutDirections[i].y * distF[i * tcells + idx], lutDirections[i].z * distF[ i * tcells + idx]);
+        float3 r = float3(lutDirections[i].x * distF[i * tcells + idx], lutDirections[i].y * distF[i * tcells + idx], lutDirections[i].z * distF[i * tcells + idx]);
         lvelocity[idx].x += r.x;
         lvelocity[idx].y += r.y;
         lvelocity[idx].z += r.z;
